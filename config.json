@@ -1,0 +1,19 @@
+{
+  "data_source" : "test.mat",
+  "matrix_name" : "Index_close",
+  "begin_at_row" : 0,
+  "end_at_row" : null,
+  "open" : null,
+  "high" : null,
+  "low" : null,
+  "close" : 0,
+
+  "initial_balance" : 1000000,
+  "leverage" : 1,
+  "allow_short_selling" : true,
+  "margin_requirement" : 0,
+  "fee" : 0.001,
+
+  "nearest_sl" : 10,
+  "point" : 0.01
+}
