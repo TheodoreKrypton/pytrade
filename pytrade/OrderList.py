@@ -1,5 +1,6 @@
 from Order import *
 from Common import singleton
+from collections import OrderedDict
 
 
 class SelectMethod:
@@ -8,6 +9,23 @@ class SelectMethod:
 
     by_pos = 0
     by_ticket = 1
+
+
+class Info:
+    def __init__(self):
+        pass
+    identifier = 0
+    open_price = 1
+    open_time = 2
+    operation = 3
+    lot = 4
+    expired_time = 5
+    open_reason = 6
+    close_time = 7
+    closed = 8
+    tp = 9
+    sl = 10
+    close_reason = 11
 
 
 @singleton
@@ -37,9 +55,8 @@ class OrderList:
     2. Use the select_by_pos mode in the function order_select and directly use the
     function (order_info, order_modify and order_close) with a [None] identifier parameter.
     """
-    hist_orders = {}
-    active_orders = {}
-    active_orders_list = None
+    hist_orders = OrderedDict()
+    active_orders = OrderedDict()
     selected_order = None
 
     identifier = 0
@@ -87,28 +104,23 @@ class OrderList:
             raise OrderNotFoundException(identifier)
 
     def order_select(self, identifier, select_mode=SelectMethod.by_pos):
-        if select_mode == self.SelectMethod.by_pos:
-            if identifier >= len(self.active_orders):
+        if select_mode == SelectMethod.by_pos:
+            if identifier >= len(self.active_orders.items()):
                 raise OrderNotFoundException(identifier)
-            elif self.active_orders_list is None:
-                self.active_orders_list = \
-                    sorted(self.active_orders.keys(), lambda x, y:
-                           self.active_orders[x].open_time <
-                           self.active_orders[y].open_time)
-            self.selected_order = self.active_orders[self.active_orders_list[identifier]]
+            self.selected_order = self.active_orders[self.active_orders.items()[identifier][0]]
         else:
             if identifier in self.active_orders:
                 self.selected_order = self.active_orders[identifier]
-
             elif identifier in self.hist_orders:
                 self.selected_order = self.hist_orders[identifier]
             else:
                 raise OrderNotFoundException(identifier)
+
         return self.selected_order
 
     def order_modify(self, identifier=None, new_price=None, new_tp=None, new_sl=None, expired_time=None):
         if identifier is not None:
-            self.order_select(identifier, self.SelectMethod.by_ticket)
+            self.order_select(identifier, SelectMethod.by_ticket)
         if self.selected_order.closed:
             raise SelectedOrderClosedException(self.selected_order.identifier)
         else:
@@ -116,7 +128,7 @@ class OrderList:
 
     def order_activate(self, price, identifier=None):
         if identifier is not None:
-            self.order_select(identifier, self.SelectMethod.by_ticket)
+            self.order_select(identifier, SelectMethod.by_ticket)
         if self.selected_order.closed:
             raise MarketOrderActivatedException(self.selected_order.identifier)
         else:
@@ -127,47 +139,30 @@ class OrderList:
                 self.naked -= self.selected_order.lot
 
     def order_info(self, info):
-        if info == self.Info.identifier:
+        if info == Info.identifier:
             return self.selected_order.identifier
-        if info == self.Info.open_price:
+        if info == Info.open_price:
             return self.selected_order.open_price
-        if info == self.Info.open_time:
+        if info == Info.open_time:
             return self.selected_order.open_time
-        if info == self.Info.operation:
+        if info == Info.operation:
             return self.selected_order.op
-        if info == self.Info.lot:
+        if info == Info.lot:
             return self.selected_order.lot
-        if info == self.Info.expired_time:
+        if info == Info.expired_time:
             return self.selected_order.expired_time
-        if info == self.Info.open_reason:
+        if info == Info.open_reason:
             return self.selected_order.open_reason
-        if info == self.Info.close_time:
+        if info == Info.close_time:
             return self.selected_order.close_time
-        if info == self.Info.closed:
+        if info == Info.closed:
             return self.selected_order.closed
-        if info == self.Info.tp:
+        if info == Info.tp:
             return self.selected_order.tp
-        if info == self.Info.sl:
+        if info == Info.sl:
             return self.selected_order.sl
-        if info == self.Info.close_reason:
+        if info == Info.close_reason:
             return self.selected_order.close_reason
-
-
-class Info:
-    def __init__(self):
-        pass
-    identifier = 0
-    open_price = 1
-    open_time = 2
-    operation = 3
-    lot = 4
-    expired_time = 5
-    open_reason = 6
-    close_time = 7
-    closed = 8
-    tp = 9
-    sl = 10
-    close_reason = 11
 
 
 if __name__ == '__main__':

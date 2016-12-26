@@ -13,18 +13,17 @@ class MyTrade(pt.TradingEnvironment):
         pass
 
     def on_bar(self):
-        if self.Time == 0:
+        if self.Time <= 1:
             return
         try:
-            if self.Close(0) > self.Close(1):
+            if self.Close(1) > self.Close(2):
                 self.OrderSend(pt.Operation.op_b, self.Close(0), 1)
 
             else:
-                if self.OrdersTotal() != 0:
-                    for i in range(0, self.OrdersTotal()):
-                        self.OrderSelect(i)
-                        self.OrderClose(self.OrderInfo(pt.Info.identifier))
-        except pt.NoPriceException, ex:
+                while self.OrdersTotal():
+                    self.OrderSelect(0)
+                    self.OrderClose(self.OrderInfo(pt.Info.identifier))
+        except pt.TradingEnvException, ex:
             print ex.message
 
     def on_events(self, reason):

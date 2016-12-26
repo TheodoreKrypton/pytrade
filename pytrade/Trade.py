@@ -126,7 +126,7 @@ class TradingEnvironment:
         self.order_pool.order_select(identifier, select_mode)
 
     def OrdersTotal(self):
-        return len(self.order_pool.active_Orders_list)
+        return len(self.order_pool.active_orders.keys())
 
     def OrderInfo(self, info):
         return self.order_pool.order_info(info)

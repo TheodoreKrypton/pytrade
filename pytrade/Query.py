@@ -60,6 +60,6 @@ class PriceProvider:
             raise PriceFormFormatException(fpath)
 
     def get(self, shift):
-        if shift < 0 or self.time-shift < 0:
-            raise NoPriceException(self.time - shift)
-        return self.prices[self.time - shift]
+        if shift < 0:
+            raise NoPriceException(shift)
+        return self.prices[shift]

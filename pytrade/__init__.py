@@ -2,7 +2,7 @@ from Common import singleton
 from Trade import *
 from Order import *
 from Exception import *
-from OrderList import Info
+import OrderList
 
 
 class Operation:
@@ -15,3 +15,5 @@ class Operation:
     op_s = 0x00000001  # sell
     op_ss = 0x10010001  # sell stop
     op_sl = 0x10001001  # sell limit
+
+Info = OrderList.Info
