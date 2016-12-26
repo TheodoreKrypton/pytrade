@@ -1,18 +1,10 @@
-"""Example
-1. Configure "config.json"
-2. Implementing trading.TradingEnvironment
-3. run
-"""
+import pytrade as pt
 
 
-import pytrade
-from matplotlib import pyplot
-
-
-class Example(pytrade.TradingEnvironment):
+@pt.singleton
+class MyTrade(pt.TradingEnvironment):
     def __init__(self):
-        pytrade.TradingEnvironment.__init__(self)
-        self.holding = 0
+        pt.TradingEnvironment.__init__(self)
 
     def on_init(self):
         pass
@@ -21,15 +13,23 @@ class Example(pytrade.TradingEnvironment):
         pass
 
     def on_bar(self):
-        identifier = self.OrderSend(pytrade.Ticket.Operation.op_b, None, 1)
-        self.OrderClose(identifier)
-        pass
+        if self.Time == 0:
+            return
+        try:
+            if self.Close(0) > self.Close(1):
+                self.OrderSend(pt.Operation.op_b, self.Close(0), 1)
+
+            else:
+                if self.OrdersTotal() != 0:
+                    for i in range(0, self.OrdersTotal()):
+                        self.OrderSelect(i)
+                        self.OrderClose(self.OrderInfo(pt.Info.identifier))
+        except pt.NoPriceException, ex:
+            print ex.message
 
     def on_events(self, reason):
         pass
 
-
-trd = Example()
-trd.run()
-pyplot.plot(trd.balance)
-pyplot.show()
+if __name__ == '__main__':
+    mytrade = MyTrade()
+    mytrade.run()
