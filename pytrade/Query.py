@@ -23,19 +23,34 @@ class PriceProvider:
         del self.prices[0]
 
         if file_fmt == "csv":
-            fp = open(fpath)
-            data = csv.reader(fp)
-
             oc = config_info["open"]
             hc = config_info["high"]
             lc = config_info["low"]
             cc = config_info["close"]
 
             row_begin = config_info["begin_at_row"]
+            _row_begin = row_begin
 
+            fp = open(fpath)
+            f = csv.reader(fp)
+            data = []
+            for row in f:
+                if _row_begin > 0:
+                    _row_begin -= 1
+                    continue
+                else:
+                    data.append(row)
 
-            # TODO: csv file reading
-            pass
+            row_end = len(data) \
+                if config_info["end_at_row"] is None else config_info["end_at_row"]
+            self.total_rows = row_end - row_begin + 1
+
+            for row in range(0, row_end):
+                o = float(data[row][oc]) if oc is not None else None
+                h = float(data[row][hc]) if hc is not None else None
+                l = float(data[row][lc]) if lc is not None else None
+                c = float(data[row][cc]) if cc is not None else None
+                self.prices.append(Bar(o, h, l, c))
 
         elif file_fmt == "mat":
             mat = io.loadmat(fpath)

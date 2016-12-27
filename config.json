@@ -1,5 +1,5 @@
 {
-  "data_source" : "test.mat",
+  "data_source" : "test.csv",
   "matrix_name" : "Index_close",
   "begin_at_row" : 0,
   "end_at_row" : null,
